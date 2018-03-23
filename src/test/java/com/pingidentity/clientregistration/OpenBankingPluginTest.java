@@ -100,7 +100,6 @@ public class OpenBankingPluginTest
     public void testCommonUris()
     {
         DynamicClient client = getDynamicClient();
-        OpenBankingPlugin plugin = new OpenBankingPlugin();
 
         String clientName = "testCommonRedirectUri";
         JwtClaims requestClaims = populateClaims(clientName, null, JWKS_1);
@@ -137,7 +136,6 @@ public class OpenBankingPluginTest
     public void testCommonRedirectUrisErrorSoftwareStatement()
     {
         DynamicClient client = getDynamicClient();
-        OpenBankingPlugin plugin = new OpenBankingPlugin();
 
         String clientName = "testCommonRedirectUri";
         JwtClaims requestClaims = populateClaims(clientName, REDIRECT_URIS_1, JWKS_1);
@@ -209,7 +207,7 @@ public class OpenBankingPluginTest
     public void testCommonJwksUri()
     {
         DynamicClient client = getDynamicClient();
-        OpenBankingPlugin plugin = new OpenBankingPlugin();
+        ((DynamicOAuthClient)client).setRequireSignedRequests(false);
 
         String clientName = "testCommonRedirectUri";
         JwtClaims requestClaims = populateClaims(clientName, REDIRECT_URIS_1, JWKS_1);
@@ -251,7 +249,6 @@ public class OpenBankingPluginTest
     public void testNoCommonJwksUri()
     {
         DynamicClient client = getDynamicClient();
-        OpenBankingPlugin plugin = new OpenBankingPlugin();
 
         String clientName = "testNoCommonRedirectUri";
         JwtClaims requestClaims = populateClaims(clientName, REDIRECT_URIS_1, JWKS_1);
@@ -272,6 +269,50 @@ public class OpenBankingPluginTest
         {
             Assert.assertTrue(e.getMessage().contains("Unable to find common JWKS URI in the payload."));
         }
+
+    }
+
+    /**
+     * This method tests the functionality of selecting a JWKS URI
+     * for a Client with TLS Authentication and require signed requests.
+     *
+     * In this method the input payload has the following configuration:
+     * jwks_uri - https://localhost:9031/pf/JWKS
+     * software_jwks_endpoint - https://localhostinvalid:9031/pf/JWKS
+     * token_endpoint_auth_method - tls_client_auth
+     * tls_client_auth_subject_dn - cn=test
+     *
+     * Claims in software_statement
+     * jwks_uri - https://localhost:9031/pf/JWKS
+     * software_jwks_endpoint - https://localhostinvalid:9031/pf/JWKS
+     *
+     */
+    @Test
+    public void testRequireSignedRequestsJwksUri()
+    {
+        DynamicClient client = getDynamicClient();
+        ((DynamicOAuthClient)client).setRequireSignedRequests(true);
+
+        String clientName = "testRequireSignedRequestsJwksUri";
+        JwtClaims requestClaims = populateClaims(clientName, REDIRECT_URIS_1, JWKS_1);
+        requestClaims.setClaim("token_endpoint_auth_method", "tls_client_auth");
+        requestClaims.setClaim("tls_client_auth_subject_dn","cn=test");
+
+        setSoftwareRedirectUriJwksUri(requestClaims, REDIRECT_URIS_1, JWKS_2);
+
+        JwtClaims softwareStatementClaims = populateClaims(clientName, null, JWKS_1);
+        setSoftwareRedirectUriJwksUri(softwareStatementClaims, null, null);
+        try
+        {
+            claimTranslator.processClaims(client, softwareStatementClaims);
+            claimTranslator.processRequestJwtClaims(client, requestClaims);
+        }
+        catch(ClientRegistrationException e)
+        {
+            Assert.fail("Expected a common JWKS URI but not obtained.");
+        }
+        Assert.assertTrue(client.getJwksUrl().equals(JWKS_1));
+        Assert.assertTrue(client.getClientCertSubjectDn().equals("cn=test"));
 
     }
 

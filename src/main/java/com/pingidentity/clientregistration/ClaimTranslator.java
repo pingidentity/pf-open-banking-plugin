@@ -32,6 +32,7 @@ import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.jose4j.jwt.consumer.JwtContext;
+import org.sourceid.oauth20.domain.DynamicOAuthClient;
 
 import javax.ws.rs.core.Response;
 import java.util.*;
@@ -123,7 +124,8 @@ class ClaimTranslator
                             dynamicClient.generateSecret(22);
                         }
 
-                        if (!tokenEndpointAuthMethod.equalsIgnoreCase(ClientAuthType.private_key_jwt.toString()))
+                        if (!tokenEndpointAuthMethod.equalsIgnoreCase(ClientAuthType.private_key_jwt.toString()) &&
+                            (dynamicClient instanceof DynamicOAuthClient && !((DynamicOAuthClient)dynamicClient).isRequireSignedRequests()))
                         {
                             dynamicClient.setJwksUrl(null);
                         }
