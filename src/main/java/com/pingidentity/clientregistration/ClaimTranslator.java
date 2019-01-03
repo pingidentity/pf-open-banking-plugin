@@ -158,6 +158,14 @@ class ClaimTranslator
                         dynamicClient.setClientCertSubjectDn(jwtClaims.getStringClaimValue(DynamicClientFields.TLS_CLIENT_AUTH_SUBJECT_DN.getName()));
                         break;
 
+                    case ID_TOKEN_ENCRYPTED_RESPONSE_ALG:
+                        dynamicClient.setIdTokenEncryptionAlgorithm(jwtClaims.getStringClaimValue(DynamicClientFields.ID_TOKEN_ENCRYPTED_RESPONSE_ALG.getName()));
+                        break;
+
+                    case ID_TOKEN_ENCRYPTED_RESPONSE_ENC:
+                        dynamicClient.setIdTokenContentEncryptionAlgorithm(jwtClaims.getStringClaimValue(DynamicClientFields.ID_TOKEN_ENCRYPTED_RESPONSE_ENC.getName()));
+                        break;
+
                     default:
                         //Do nothing: Rest of the claims has been extracted by software statement claims
                         break;

@@ -45,7 +45,9 @@ public class Constants
                                                                                            DynamicClientFields.RESPONSE_TYPES,
                                                                                            DynamicClientFields.ID_TOKEN_SIGNED_RESPONSE_ALG,
                                                                                            DynamicClientFields.SCOPE,
-                                                                                           DynamicClientFields.TLS_CLIENT_AUTH_SUBJECT_DN);
+                                                                                           DynamicClientFields.TLS_CLIENT_AUTH_SUBJECT_DN,
+                                                                                           DynamicClientFields.ID_TOKEN_ENCRYPTED_RESPONSE_ALG,
+                                                                                           DynamicClientFields.ID_TOKEN_ENCRYPTED_RESPONSE_ENC);
 
     public enum ApplicationType
     {
