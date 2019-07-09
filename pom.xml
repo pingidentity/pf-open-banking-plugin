@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <pf.version>9.2.0.10</pf.version>
+        <pf.version>9.3.0.10</pf.version>
     </properties>
 
     <name>PingFederate Open Banking Software Assertion Validator</name>
     <groupId>products.plugins</groupId>
     <artifactId>pf-openbanking-plugin</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <build>
