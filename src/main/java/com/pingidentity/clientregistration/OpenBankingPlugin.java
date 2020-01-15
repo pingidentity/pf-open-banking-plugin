@@ -211,7 +211,7 @@ public class OpenBankingPlugin implements DynamicClientRegistrationPlugin
             LOG.debug(" Successfully processed claims from software_statement JWT.");
 
             LOG.debug("Obtain claims from input JWT to create a client.");
-            claimTranslator.processRequestJwtClaims(dynamicClient, requestJwtVerifiedClaims);
+            claimTranslator.processRequestJwtClaims(dynamicClient, requestJwtVerifiedClaims, softwareStatementClaims);
             LOG.debug(" Successfully processed claims from input JWT.");
 
             String clientName = getClientName(dynamicClient, softwareStatementClaims);

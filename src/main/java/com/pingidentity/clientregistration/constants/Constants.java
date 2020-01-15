@@ -47,7 +47,15 @@ public class Constants
                                                                                            DynamicClientFields.SCOPE,
                                                                                            DynamicClientFields.TLS_CLIENT_AUTH_SUBJECT_DN,
                                                                                            DynamicClientFields.ID_TOKEN_ENCRYPTED_RESPONSE_ALG,
-                                                                                           DynamicClientFields.ID_TOKEN_ENCRYPTED_RESPONSE_ENC);
+                                                                                           DynamicClientFields.ID_TOKEN_ENCRYPTED_RESPONSE_ENC,
+                                                                                           DynamicClientFields.REQUEST_OBJECT_SIGNING_ALG,
+                                                                                           DynamicClientFields.TOKEN_ENDPOINT_AUTH_SIGNING_ALG,
+                                                                                           DynamicClientFields.BACKCHANNEL_TOKEN_DELIVERY_MODE,
+                                                                                           DynamicClientFields.BACKCHANNEL_CLIENT_NOTIFICATION_ENDPOINT,
+                                                                                           DynamicClientFields.BACKCHANNEL_USER_CODE_PARAMETER,
+                                                                                           DynamicClientFields.BACKCHANNEL_AUTHENTICATION_REQUEST_SIGNING_ALG,
+                                                                                           DynamicClientFields.SUBJECT_TYPE,
+                                                                                           DynamicClientFields.SECTOR_IDENTIFIER_URI);
 
     public enum ApplicationType
     {

@@ -32,6 +32,8 @@ import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.jose4j.jwt.consumer.JwtContext;
+import org.sourceid.oauth20.protocol.GrantTypes;
+import org.sourceid.openid.connect.UserIdType;
 
 import javax.ws.rs.core.Response;
 import java.util.*;
@@ -76,19 +78,112 @@ class ClaimTranslator
                 dynamicClient.setJwks(jwtClaims.getStringClaimValue(DynamicClientFields.JWKS.getName()));
                 break;
             default:
+                processClaimsWithOverwrite(claimName, dynamicClient, jwtClaims, true, null);
+                break;
+        }
+    }
+
+    /**
+     * This method should be called when either the Software statement or the input JWT takes precendence over each other.
+     * Before using the claim value from {@paramref jwtClaimsForProcessing} to populate a OAuth Client, this method checks if
+     * Oauth Client's field should be overwritten by the claim value in {@paramref jwtClaimsForProcessing} or ensures that
+     * otherJwtClaims has no value for {@paramref claimName}.
+     *
+     * @param claimName
+     * @param dynamicClient
+     * @param jwtClaimsForProcessing the JWT claims for processing to create a OAuth Client.
+     * @param otherJwtClaims if the jwtClaimsForProcessing is from incoming request JWT,
+     * this should be the software statement JWT claims or visa-versa. This field is only required when isOverwrite is TRUE.
+     * @param isOverwrite should be true, when the claim value should be used to populate a OAuth Client irrespective of existing values in the OAuth Client.
+     * @throws MalformedClaimException
+     */
+    private void processClaimsWithOverwrite(DynamicClientFields claimName, DynamicClient dynamicClient, JwtClaims jwtClaimsForProcessing,
+                                            boolean isOverwrite, JwtClaims otherJwtClaims) throws MalformedClaimException
+    {
+        switch (claimName)
+        {
+            case REQUEST_OBJECT_SIGNING_ALG:
+                final String requestObjectSigningAlgClaim =
+                        jwtClaimsForProcessing.getStringClaimValue(DynamicClientFields.REQUEST_OBJECT_SIGNING_ALG.getName());
+                if(isOverWriteValue (isOverwrite, otherJwtClaims, claimName))
+                {
+                    dynamicClient.setRequestObjectSigningAlgorithm(requestObjectSigningAlgClaim);
+                }
+                break;
+            case TOKEN_ENDPOINT_AUTH_SIGNING_ALG:
+                final String tokenEndpointAuthSigningAlgClaim =
+                        jwtClaimsForProcessing.getStringClaimValue(DynamicClientFields.TOKEN_ENDPOINT_AUTH_SIGNING_ALG.getName());
+                if(isOverWriteValue (isOverwrite, otherJwtClaims, claimName))
+                {
+                    dynamicClient.setTokenEndpointAuthSigningAlgorithm(tokenEndpointAuthSigningAlgClaim);
+                }
+                break;
+            case BACKCHANNEL_TOKEN_DELIVERY_MODE:
+                String deliveryMode = jwtClaimsForProcessing.getStringClaimValue(DynamicClientFields.BACKCHANNEL_TOKEN_DELIVERY_MODE.getName());
+                if(isOverWriteValue (isOverwrite, otherJwtClaims, claimName))
+                {
+                    dynamicClient.setCibaDeliveryMode(deliveryMode);
+                }
+                break;
+            case BACKCHANNEL_CLIENT_NOTIFICATION_ENDPOINT:
+                String notificationEndpoint = jwtClaimsForProcessing.getStringClaimValue(DynamicClientFields.BACKCHANNEL_CLIENT_NOTIFICATION_ENDPOINT.getName());
+                if(isOverWriteValue (isOverwrite, otherJwtClaims, claimName))
+                {
+                    dynamicClient.setCibaNotificationEndpoint(notificationEndpoint);
+                }
+                break;
+            case BACKCHANNEL_USER_CODE_PARAMETER:
+                Boolean userCode = (Boolean) jwtClaimsForProcessing.getClaimValue(DynamicClientFields.BACKCHANNEL_USER_CODE_PARAMETER.getName());
+                boolean value = userCode == null ? false : userCode;
+                if(isOverWriteValue (isOverwrite, otherJwtClaims, claimName))
+                {
+                    dynamicClient.setCibaSupportUserCode(value);
+                }
+                break;
+            case BACKCHANNEL_AUTHENTICATION_REQUEST_SIGNING_ALG:
+                String backChannelAuthRequestSigningAlg = jwtClaimsForProcessing.getStringClaimValue(DynamicClientFields.BACKCHANNEL_AUTHENTICATION_REQUEST_SIGNING_ALG.getName());
+                if(isOverWriteValue (isOverwrite, otherJwtClaims, claimName))
+                {
+                    dynamicClient.setCibaRequestObjectSigningAlgorithm(backChannelAuthRequestSigningAlg);
+                }
+                break;
+            case SUBJECT_TYPE:
+                String subjectType = jwtClaimsForProcessing.getStringClaimValue(DynamicClientFields.SUBJECT_TYPE.getName());
+                boolean pairwiseUserType = UserIdType.PAIRWISE.equals(subjectType);
+                if(isOverWriteValue (isOverwrite, otherJwtClaims, claimName))
+                {
+                    dynamicClient.setPairwiseUserType(pairwiseUserType);
+                }
+                break;
+            case SECTOR_IDENTIFIER_URI:
+                if(isOverWriteValue (isOverwrite, otherJwtClaims, claimName))
+                {
+                    dynamicClient.setSectorIdentifierUri(jwtClaimsForProcessing.getStringClaimValue(DynamicClientFields.SECTOR_IDENTIFIER_URI.getName()));
+                }
+                break;
+
+            default:
                 // do nothing: we only consider the OAuth specific claims obtained from request JWT and PingFederate proprietary attributes.
                 // The remaining claims are treated as software or extended metadata.
                 break;
         }
     }
 
+    private boolean isOverWriteValue(boolean overWriteFlag, JwtClaims otherJwtClaim, DynamicClientFields fieldName)
+    {
+       return overWriteFlag ||
+              !(otherJwtClaim == null  ||
+                otherJwtClaim.hasClaim(fieldName.getName()));
+    }
+
     /**
      * This method populates standard OAuth claims from the Request JWT
      * @param dynamicClient a OAuth client
      * @param jwtClaims claims from the request JWT
+     * @param softwareStatementClaims claims from software statement
      * @throws ClientRegistrationException when a required claim is not available or cannot be parsed
      */
-    void processRequestJwtClaims(DynamicClient dynamicClient, JwtClaims jwtClaims)
+    void processRequestJwtClaims(DynamicClient dynamicClient, JwtClaims jwtClaims, JwtClaims softwareStatementClaims)
             throws ClientRegistrationException
     {
         for (DynamicClientFields claimName: Constants.CLAIMS_FROM_REQUEST_JWT)
@@ -123,11 +218,6 @@ class ClaimTranslator
                             dynamicClient.generateSecret(22);
                         }
 
-                        if (!tokenEndpointAuthMethod.equalsIgnoreCase(ClientAuthType.private_key_jwt.toString()) &&
-                            !dynamicClient.isRequireSignedRequests())
-                        {
-                            dynamicClient.setJwksUrl(null);
-                        }
                         break;
 
                     case GRANT_TYPES:
@@ -167,6 +257,7 @@ class ClaimTranslator
                         break;
 
                     default:
+                        processClaimsWithOverwrite(claimName, dynamicClient, jwtClaims, false, softwareStatementClaims);
                         //Do nothing: Rest of the claims has been extracted by software statement claims
                         break;
                 }
@@ -193,6 +284,19 @@ class ClaimTranslator
                                                       e.getMessage());
             }
         }
+
+        clearJwksUri(dynamicClient);
+    }
+
+    private void clearJwksUri(DynamicClient dynamicClient)
+    {
+        if (!(ClientAuthType.private_key_jwt.toString().equalsIgnoreCase(dynamicClient.getClientAuthenticationType()) ||
+            dynamicClient.isRequireSignedRequests() ||
+            dynamicClient.getGrantTypes().contains(GrantTypes.CIBA)))
+        {
+            dynamicClient.setJwksUrl(null);
+        }
+        return;
     }
 
     /**

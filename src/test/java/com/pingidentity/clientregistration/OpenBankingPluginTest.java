@@ -111,7 +111,7 @@ public class OpenBankingPluginTest
         try
         {
             claimTranslator.processClaims(client, softwareStatementClaims);
-            claimTranslator.processRequestJwtClaims(client, requestClaims);
+            claimTranslator.processRequestJwtClaims(client, requestClaims, softwareStatementClaims);
 
         }
         catch(ClientRegistrationException e)
@@ -147,7 +147,7 @@ public class OpenBankingPluginTest
         try
         {
             claimTranslator.processClaims(client, softwareStatementClaims);
-            claimTranslator.processRequestJwtClaims(client, requestClaims);
+            claimTranslator.processRequestJwtClaims(client, requestClaims, softwareStatementClaims);
             Assert.fail("Expected a ClientRegistrationException due to unavailability of common redirect uris.");
 
         }
@@ -178,7 +178,7 @@ public class OpenBankingPluginTest
         try
         {
             claimTranslator.processClaims(client, softwareStatementClaims);
-            claimTranslator.processRequestJwtClaims(client, requestClaims);
+            claimTranslator.processRequestJwtClaims(client, requestClaims, softwareStatementClaims);
             Assert.fail("Expected a ClientRegistrationException due to unavailability of common redirect uris.");
 
         }
@@ -220,7 +220,7 @@ public class OpenBankingPluginTest
         try
         {
             claimTranslator.processClaims(client, softwareStatementClaims);
-            claimTranslator.processRequestJwtClaims(client, requestClaims);
+            claimTranslator.processRequestJwtClaims(client, requestClaims, softwareStatementClaims);
         }
         catch(ClientRegistrationException e)
         {
@@ -260,7 +260,7 @@ public class OpenBankingPluginTest
         try
         {
             claimTranslator.processClaims(client, softwareStatementClaims);
-            claimTranslator.processRequestJwtClaims(client, requestClaims);
+            claimTranslator.processRequestJwtClaims(client, requestClaims, softwareStatementClaims);
 
             Assert.fail("Expecting a ClientRegistrationException for not having common redirect URIs.");
 
@@ -305,7 +305,7 @@ public class OpenBankingPluginTest
         try
         {
             claimTranslator.processClaims(client, softwareStatementClaims);
-            claimTranslator.processRequestJwtClaims(client, requestClaims);
+            claimTranslator.processRequestJwtClaims(client, requestClaims, softwareStatementClaims);
         }
         catch(ClientRegistrationException e)
         {
