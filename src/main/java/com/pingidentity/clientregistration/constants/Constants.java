@@ -55,7 +55,8 @@ public class Constants
                                                                                            DynamicClientFields.BACKCHANNEL_USER_CODE_PARAMETER,
                                                                                            DynamicClientFields.BACKCHANNEL_AUTHENTICATION_REQUEST_SIGNING_ALG,
                                                                                            DynamicClientFields.SUBJECT_TYPE,
-                                                                                           DynamicClientFields.SECTOR_IDENTIFIER_URI);
+                                                                                           DynamicClientFields.SECTOR_IDENTIFIER_URI,
+                                                                                           DynamicClientFields.DPOP_BOUND_ACCESS_TOKENS);
 
     public enum ApplicationType
     {
