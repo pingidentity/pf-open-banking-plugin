@@ -317,4 +317,103 @@ public class OpenBankingPluginTest
     }
 
 
+    @Test
+    public void testSoftwareStatementDpopBoundAccessTokensEnabled()
+    {
+        String clientName = "testSoftwareStatementDpopBoundAccessTokensEnabled";
+        DynamicClient client = getDynamicClient();
+
+        JwtClaims requestClaims = populateClaims(clientName, REDIRECT_URIS_1, JWKS_1);
+        JwtClaims softwareStatementClaims = populateClaims(clientName, REDIRECT_URIS_1, JWKS_1);
+
+        // Set DPOP_BOUND_ACCESS_TOKENS claim to true in software statement
+        softwareStatementClaims.setClaim(DynamicClientFields.DPOP_BOUND_ACCESS_TOKENS.getName(), true);
+
+        try
+        {
+            claimTranslator.processClaims(client, softwareStatementClaims);
+            claimTranslator.processRequestJwtClaims(client, requestClaims, softwareStatementClaims);
+
+            Assert.assertTrue(client.isRequireDpop());
+        }
+        catch(ClientRegistrationException e)
+        {
+            Assert.fail("Unexpected");
+        }
+    }
+
+    @Test
+    public void testSoftwareStatementDpopBoundAccessTokensDisabled()
+    {
+        String clientName = "testSoftwareStatementDpopBoundAccessTokensDisabled";
+        DynamicClient client = getDynamicClient();
+
+        JwtClaims requestClaims = populateClaims(clientName, REDIRECT_URIS_1, JWKS_1);
+        JwtClaims softwareStatementClaims = populateClaims(clientName, REDIRECT_URIS_1, JWKS_1);
+
+        // Set DPOP_BOUND_ACCESS_TOKENS claim to false in software statement
+        softwareStatementClaims.setClaim(DynamicClientFields.DPOP_BOUND_ACCESS_TOKENS.getName(), false);
+
+        try
+        {
+            claimTranslator.processClaims(client, softwareStatementClaims);
+            claimTranslator.processRequestJwtClaims(client, requestClaims, softwareStatementClaims);
+
+            Assert.assertFalse(client.isRequireDpop());
+        }
+        catch(ClientRegistrationException e)
+        {
+            Assert.fail("Unexpected");
+        }
+    }
+
+    @Test
+    public void testSoftwareStatementDpopBoundAccessTokensNotSet()
+    {
+        String clientName = "testSoftwareStatementDpopBoundAccessTokensNotSet";
+        DynamicClient client = getDynamicClient();
+
+        JwtClaims requestClaims = populateClaims(clientName, REDIRECT_URIS_1, JWKS_1);
+        JwtClaims softwareStatementClaims = populateClaims(clientName, REDIRECT_URIS_1, JWKS_1);
+
+        // Do not set DPOP_BOUND_ACCESS_TOKENS claim in software statement
+
+        try
+        {
+            claimTranslator.processClaims(client, softwareStatementClaims);
+            claimTranslator.processRequestJwtClaims(client, requestClaims, softwareStatementClaims);
+
+            Assert.assertFalse(client.isRequireDpop());
+        }
+        catch(ClientRegistrationException e)
+        {
+            Assert.fail("Unexpected");
+        }
+    }
+
+    @Test
+    public void testRequestDpopBoundAccessTokensIgnored()
+    {
+        String clientName = "testRequestDpopBoundAccessTokensIgnored";
+        DynamicClient client = getDynamicClient();
+
+        JwtClaims requestClaims = populateClaims(clientName, REDIRECT_URIS_1, JWKS_1);
+        JwtClaims softwareStatementClaims = populateClaims(clientName, REDIRECT_URIS_1, JWKS_1);
+
+        // Set DPOP_BOUND_ACCESS_TOKENS claim to false in the request
+        requestClaims.setClaim(DynamicClientFields.DPOP_BOUND_ACCESS_TOKENS.getName(), true);
+
+        try
+        {
+            claimTranslator.processClaims(client, softwareStatementClaims);
+            claimTranslator.processRequestJwtClaims(client, requestClaims, softwareStatementClaims);
+
+            // DPOP_BOUND_ACCESS_TOKENS claim to false in the request is ignored
+            Assert.assertFalse(client.isRequireDpop());
+        }
+        catch(ClientRegistrationException e)
+        {
+            Assert.fail("Unexpected");
+        }
+    }
 }

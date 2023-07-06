@@ -77,6 +77,11 @@ class ClaimTranslator
             case JWKS:
                 dynamicClient.setJwks(jwtClaims.getStringClaimValue(DynamicClientFields.JWKS.getName()));
                 break;
+            case DPOP_BOUND_ACCESS_TOKENS:
+                Boolean dpopBoundAccessTokensClaim = jwtClaims.getClaimValue(DynamicClientFields.DPOP_BOUND_ACCESS_TOKENS.getName(), Boolean.class);
+                boolean requireDpop = dpopBoundAccessTokensClaim != null ? dpopBoundAccessTokensClaim : false;
+                dynamicClient.setRequireDpop(requireDpop);
+                break;
             default:
                 processClaimsWithOverwrite(claimName, dynamicClient, jwtClaims, true, null);
                 break;
