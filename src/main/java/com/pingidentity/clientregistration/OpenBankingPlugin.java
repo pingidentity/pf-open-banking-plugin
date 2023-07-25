@@ -19,7 +19,6 @@ package com.pingidentity.clientregistration;
 
 import com.pingidentity.clientregistration.constants.Constants;
 import com.pingidentity.clientregistration.constants.DynamicClientSoftwareFields;
-import com.pingidentity.commonsvcs.api.Headers;
 import com.pingidentity.sdk.GuiConfigDescriptor;
 import com.pingidentity.sdk.PluginDescriptor;
 import com.pingidentity.sdk.oauth20.registration.*;
@@ -63,6 +62,8 @@ public class OpenBankingPlugin implements DynamicClientRegistrationPlugin
     private static final String VERSION = "1.0";
 
     private static final String MEDIA_TYPE_JWT = "application/jwt";
+
+    private static final String CONTENT_TYPE = "Content-Type";
 
     private String issuer;
     private JwksHandler jwksHandler;
@@ -165,7 +166,7 @@ public class OpenBankingPlugin implements DynamicClientRegistrationPlugin
     public void processPlugin(HttpServletRequest request, HttpServletResponse response, DynamicClient dynamicClient, Map<String, Object> inParameters)
             throws ClientRegistrationException
     {
-        String contentType = request.getHeader(Headers.CONTENT_TYPE);
+        String contentType = request.getHeader(CONTENT_TYPE);
         if (contentType != null && !contentType.toLowerCase().contains(MEDIA_TYPE_JWT))
         {
             throw new ClientRegistrationException(Response.Status.UNSUPPORTED_MEDIA_TYPE,

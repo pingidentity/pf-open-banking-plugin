@@ -162,6 +162,15 @@ class ClaimTranslator
                 }
                 break;
 
+            case DPOP_BOUND_ACCESS_TOKENS:
+                if(isOverWriteValue(isOverwrite, otherJwtClaims, claimName))
+                {
+                    Boolean dpopBoundAccessTokensClaim = jwtClaimsForProcessing.getClaimValue(DynamicClientFields.DPOP_BOUND_ACCESS_TOKENS.getName(), Boolean.class);
+                    boolean requireDpop = dpopBoundAccessTokensClaim != null ? dpopBoundAccessTokensClaim : false;
+                    dynamicClient.setRequireDpop(requireDpop);
+                }
+                break;
+
             default:
                 // do nothing: we only consider the OAuth specific claims obtained from request JWT and PingFederate proprietary attributes.
                 // The remaining claims are treated as software or extended metadata.
