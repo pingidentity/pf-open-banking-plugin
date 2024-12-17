@@ -265,6 +265,18 @@ class ClaimTranslator
                         dynamicClient.setIdTokenContentEncryptionAlgorithm(jwtClaims.getStringClaimValue(DynamicClientFields.ID_TOKEN_ENCRYPTED_RESPONSE_ENC.getName()));
                         break;
 
+                    case USERINFO_SIGNED_RESPONSE_ALG:
+                        dynamicClient.setUserInfoResponseSigningAlgorithm(jwtClaims.getStringClaimValue(DynamicClientFields.USERINFO_SIGNED_RESPONSE_ALG.getName()));
+                        break;
+
+                    case USERINFO_ENCRYPTED_RESPONSE_ALG:
+                        dynamicClient.setUserInfoResponseEncryptionAlgorithm(jwtClaims.getStringClaimValue(DynamicClientFields.USERINFO_ENCRYPTED_RESPONSE_ALG.getName()));
+                        break;
+
+                    case USERINFO_ENCRYPTED_RESPONSE_ENC:
+                        dynamicClient.setUserInfoResponseContentEncryptionAlgorithm(jwtClaims.getStringClaimValue(DynamicClientFields.USERINFO_ENCRYPTED_RESPONSE_ENC.getName()));
+                        break;
+
                     default:
                         processClaimsWithOverwrite(claimName, dynamicClient, jwtClaims, false, softwareStatementClaims);
                         //Do nothing: Rest of the claims has been extracted by software statement claims

@@ -9,7 +9,8 @@ Compiling this source and configuring an instance of the resulting plug-in withi
 
 ### System requirements and dependencies
 
-* PingFederate 11.3 or higher
+* PingFederate 12.2 or higher
+* PingFederate 11.3 support is available at [11.3](https://github.com/pingidentity/open-banking-plugin/tree/11.3) branch 
 * PingFederate 10.0 support is available at [10.0](https://github.com/pingidentity/open-banking-plugin/tree/10.0) branch 
 * PingFederate 9.3 support is available at [9.3](https://github.com/pingidentity/open-banking-plugin/tree/9.3) branch 
 * PingFederate 9.2 support is available at [9.2](https://github.com/pingidentity/open-banking-plugin/tree/9.2) branch 
