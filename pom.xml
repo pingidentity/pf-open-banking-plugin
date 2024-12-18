@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <pf.version>11.3.0.7</pf.version>
+        <pf.version>12.2.0.0</pf.version>
     </properties>
 
     <name>PingFederate Open Banking Software Assertion Validator</name>
