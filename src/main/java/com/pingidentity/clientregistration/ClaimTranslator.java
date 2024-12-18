@@ -171,6 +171,27 @@ class ClaimTranslator
                 }
                 break;
 
+            case USERINFO_SIGNED_RESPONSE_ALG:
+                if(isOverWriteValue (isOverwrite, otherJwtClaims, claimName))
+                {
+                    dynamicClient.setUserInfoResponseSigningAlgorithm(jwtClaimsForProcessing.getStringClaimValue(DynamicClientFields.USERINFO_SIGNED_RESPONSE_ALG.getName()));
+                }
+                break;
+
+            case USERINFO_ENCRYPTED_RESPONSE_ALG:
+                if(isOverWriteValue (isOverwrite, otherJwtClaims, claimName))
+                {
+                    dynamicClient.setUserInfoResponseEncryptionAlgorithm(jwtClaimsForProcessing.getStringClaimValue(DynamicClientFields.USERINFO_ENCRYPTED_RESPONSE_ALG.getName()));
+                }
+                break;
+
+            case USERINFO_ENCRYPTED_RESPONSE_ENC:
+                if(isOverWriteValue (isOverwrite, otherJwtClaims, claimName))
+                {
+                    dynamicClient.setUserInfoResponseContentEncryptionAlgorithm(jwtClaimsForProcessing.getStringClaimValue(DynamicClientFields.USERINFO_ENCRYPTED_RESPONSE_ENC.getName()));
+                }
+                break;
+
             default:
                 // do nothing: we only consider the OAuth specific claims obtained from request JWT and PingFederate proprietary attributes.
                 // The remaining claims are treated as software or extended metadata.
@@ -263,18 +284,6 @@ class ClaimTranslator
 
                     case ID_TOKEN_ENCRYPTED_RESPONSE_ENC:
                         dynamicClient.setIdTokenContentEncryptionAlgorithm(jwtClaims.getStringClaimValue(DynamicClientFields.ID_TOKEN_ENCRYPTED_RESPONSE_ENC.getName()));
-                        break;
-
-                    case USERINFO_SIGNED_RESPONSE_ALG:
-                        dynamicClient.setUserInfoResponseSigningAlgorithm(jwtClaims.getStringClaimValue(DynamicClientFields.USERINFO_SIGNED_RESPONSE_ALG.getName()));
-                        break;
-
-                    case USERINFO_ENCRYPTED_RESPONSE_ALG:
-                        dynamicClient.setUserInfoResponseEncryptionAlgorithm(jwtClaims.getStringClaimValue(DynamicClientFields.USERINFO_ENCRYPTED_RESPONSE_ALG.getName()));
-                        break;
-
-                    case USERINFO_ENCRYPTED_RESPONSE_ENC:
-                        dynamicClient.setUserInfoResponseContentEncryptionAlgorithm(jwtClaims.getStringClaimValue(DynamicClientFields.USERINFO_ENCRYPTED_RESPONSE_ENC.getName()));
                         break;
 
                     default:
